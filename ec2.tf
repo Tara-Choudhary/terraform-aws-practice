@@ -58,7 +58,7 @@ resource "aws_security_group" "my_security_group" {
 # key pair
 
 resource "aws_key_pair" "my_key" {
-  key_name   = "terra-key-aws"
+  key_name   = var.aws_key_pair_name
   public_key = file("terra-key-aws.pub")
 }
 
@@ -66,15 +66,15 @@ resource "aws_key_pair" "my_key" {
 # EC2 Instance
 
 resource "aws_instance" "my_instance" {
-  ami                         = "ami-0ecb62995f68bb549" # ubuntu us-east-1
-  instance_type               = "t3.micro"
+  ami                         = var.ami
+  instance_type               = var.instance_type
   key_name                    = aws_key_pair.my_key.key_name
   vpc_security_group_ids      = [aws_security_group.my_security_group.id]
-
+  user_data                   = file("install_nginx.sh")
 
 #   volume block
     root_block_device {
-        volume_size = 15
+        volume_size = var.volume_size
         volume_type = "gp3"
     }
 
